@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>PNG图片压缩</title>
+<meta name="description" content="PNG图片压缩" />
+<meta name="keywords" content="PNG图片压缩" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link rel="stylesheet" type="text/css" href="css/style.css" title="style" />
+<script type="text/javascript" src="res/zepto.min.js"></script>
+<script type="text/javascript" src="res/jszip.min.js"></script>
+<script type="text/javascript" src="res/FileSaver.js"></script>
+<script type="text/javascript" src="pngtiny.js"></script>
+</head>
+<body>
+<div id="main">
+    <div id="header">
+        <div id="logo">
+            <div id="logo_text"><h1>PNG图片压缩</h1></div>
+        </div>
+        <div id="menubar">
+            <p id="desc">把图片拖进来&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;或者</p>
+            <div class="chsPic">点击选择图片</div>
+            <input type="file" name="chsfile" id="chsfile" value="" accept="image/png" title="" multiple class="chsPic opacity"></input>
+            <div class="downall" id="downall">一键打包下载</div>
+            <div class="clearBtn" id="clearBtn">清除列表</div>
+        </div>
+    </div>
+    <div class="site_content" id="preDesc">可以直接把一堆图片拖进来<br/>或者点击按钮选择一堆图片<br/><span class="detxt">注意：打包下载时候同名图片只会打包一个，如果有同名的图片并且需要打包下载，请先清除列表再进行压缩</span></div>
+    <div class="site_content">
+        <div id="content">
+            <ul id="conUl"></ul>
+        </div>
+    </div>
+    <div id="content_footer"></div>
+    <div id="footer">Copyright &copy; QC</div>
+</div>
+<script type="text/javascript">
+var imgList = [];
+$('#downall').click(function(){
+    var len = imgList.length;
+    if(len==0) {
+        return;
+    }
+    var zip = new JSZip();
+    for(var i=0;i<len;i++) {
+        zip.file(imgList[i].name, imgList[i].data);
+    }
+    var date = new Date();
+    var mon = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '_';
+    var day = date.getDate() + '_';
+    var hour = date.getHours() + '_';
+    var minu = date.getMinutes();
+    zip.generateAsync({type:"blob"}).then(function(content) {
+        saveAs(content, "pngtiny"+mon+day+hour+minu+".zip");
+    });
+});
+$('#clearBtn').click(function(){
+    imgList=[];
+    $('#conUl').html('');
+});
+pngtiny.onRuntimeInitialized=function(){
+$('#chsfile').bind("change",function(e){
+    var files = e.target.files;
+    displayChsFile(files);
+    $('#chsfile').val('');
+});
+var tar = document.getElementById("main");
+tar.addEventListener("dragenter", function(event){
+    event.stopPropagation();
+    event.preventDefault();
+}, false);
+tar.addEventListener("dragover", function(event){
+    event.stopPropagation();
+    event.preventDefault();
+}, false);
+tar.addEventListener("drop", handleDrop, false);
+function displayChsFile(files) {
+    var fileList = document.getElementById("fileList");
+    var conUl = $('#conUl');
+    var liNum = $('#conUl li').length+1;
+    if(liNum==1) {
+        $('#preDesc').hide();
+        conUl.append('<li id="conli0" class="litop"><div class="fname">名称</div><div class="before">原始体积</div><div class="status">状态</div><div class="after">压缩后体积</div><div class="deal">压缩率</div><div class="down">操作</div></li>');
+    }
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        if(file.type=='image/png') {
+            conUl.append('<li id="conli'+liNum+'"><div class="fname">'+file.name+'</div><div class="before">'+file.name+'</div><div class="status"></div><div class="after"></div><div class="deal"></div><div class="down"></div></li>');
+            $('#conli'+liNum+' .before').html(getSizeTrans(file.size));
+            uploadFile(file, liNum);
+            liNum++;
+        }
+    }
+}
+function handleDrop(event){
+    var files = event.dataTransfer.files;
+    event.stopPropagation();
+    event.preventDefault();
+    displayChsFile(files);
+}
+function getSizeTrans(fs) {
+    if(fs<1024) {
+        return fs;
+    } else if(fs<1024*1024) {
+        return parseInt(fs*10/1024)/10+'K';
+    } else if(fs<1024*1024*1024) {
+        return parseInt(fs*10/1024/1024)/10+'M';
+    } else {
+        return parseInt(fs*10/1024/1024/1024)/10+'G';
+    }
+}
+function uploadFile(file, ufid) {
+    $('#conli'+ufid+' .status').html('正在处理');
+    var reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onload = function(e) {
+        var fcont = new Uint8Array(e.target.result);
+        var fsize = fcont.byteLength;
+        var dataptr = pngtiny._malloc(fsize);
+        var retdata = pngtiny._malloc(4);
+        pngtiny.HEAPU8.set(fcont,dataptr);
+        pngtiny._tiny(dataptr,fsize,retdata);
+        var rdata = new Int32Array(pngtiny.HEAPU8.buffer, retdata, 1);
+        var size = rdata[0];
+        var blob=null;
+        if(size>0) {
+            var pic = new Uint8Array(size);
+            var rdata = new Uint8Array(pngtiny.HEAPU8.buffer, dataptr, size);
+            pic.set(rdata);
+            blob = new Blob([pic.buffer], {type: "image/png"});
+            pic=null;
+        } else {
+            blob = new Blob([fcont.buffer], {type: "image/png"});
+            size=fsize;
+        }
+        fcont=null;
+        var url = (URL || webkitURL).createObjectURL(blob);
+        imgList.push({name:file.name,data:blob});
+        var dr = ((fsize-size)*100/fsize|0)+'%';
+        $('#conli'+ufid+' .status').html('完成');
+        $('#conli'+ufid+' .after').html(getSizeTrans(size));
+        $('#conli'+ufid+' .deal').html(dr);
+        $('#conli'+ufid+' .down').html('<a href="'+url+'" download="'+file.name+'">下载</a>');
+        pngtiny._free(dataptr);
+        pngtiny._free(retdata);
+    };
+}
+};
+pngtiny.run();
+</script>
+</body>
+</html>
