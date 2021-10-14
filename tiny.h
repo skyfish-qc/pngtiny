@@ -6,6 +6,7 @@
 #include "stdlib.h"
 #include "png.h"
 #include "libimagequant.h"
+#include "jpeglib.h"
 
 #include <emscripten.h>
 
@@ -68,3 +69,7 @@ typedef struct {
     int size;
     int offset;
 }ImageSource;
+static void failSet(unsigned char* retdata) {
+    int size = 0;
+    memcpy(retdata,&size,sizeof(size));
+}

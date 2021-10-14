@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>PNG图片压缩</title>
-<meta name="description" content="PNG图片压缩" />
-<meta name="keywords" content="PNG图片压缩" />
+<title>图片压缩工具</title>
+<meta name="description" content="图片压缩工具" />
+<meta name="keywords" content="图片压缩工具" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <link rel="stylesheet" type="text/css" href="css/style.css" title="style" />
 <script type="text/javascript" src="res/zepto.min.js"></script>
@@ -15,17 +15,17 @@
 <div id="main">
     <div id="header">
         <div id="logo">
-            <div id="logo_text"><h1>PNG图片压缩</h1></div>
+            <div id="logo_text"><h1>图片压缩工具</h1></div>
         </div>
         <div id="menubar">
             <p id="desc">把图片拖进来&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;或者</p>
             <div class="chsPic">点击选择图片</div>
-            <input type="file" name="chsfile" id="chsfile" value="" accept="image/png" title="" multiple class="chsPic opacity"></input>
+            <input type="file" name="chsfile" id="chsfile" value="" accept="image/png,image/jpeg" title="" multiple class="chsPic opacity"></input>
             <div class="downall" id="downall">一键打包下载</div>
             <div class="clearBtn" id="clearBtn">清除列表</div>
         </div>
     </div>
-    <div class="site_content" id="preDesc">可以直接把一堆图片拖进来<br/>或者点击按钮选择一堆图片<br/><span class="detxt">注意：打包下载时候同名图片只会打包一个，如果有同名的图片并且需要打包下载，请先清除列表再进行压缩</span></div>
+    <div class="site_content" id="preDesc">可以直接把一堆图片拖进来<br/>或者点击按钮选择一堆图片<br/><span class="detxt">注意：打包下载时候同名图片只会打包一个，如果有同名的图片并且需要打包下载，请先清除列表再进行压缩<br/>支持png和jpg格式的图片。</span></div>
     <div class="site_content">
         <div id="content">
             <ul id="conUl"></ul>
@@ -84,7 +84,7 @@ function displayChsFile(files) {
     }
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
-        if(file.type=='image/png') {
+        if(['image/png','image/jpeg'].indexOf(file.type)) {
             conUl.append('<li id="conli'+liNum+'"><div class="fname">'+file.name+'</div><div class="before">'+file.name+'</div><div class="status"></div><div class="after"></div><div class="deal"></div><div class="down"></div></li>');
             $('#conli'+liNum+' .before').html(getSizeTrans(file.size));
             uploadFile(file, liNum);
