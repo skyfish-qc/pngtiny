@@ -84,7 +84,7 @@ function displayChsFile(files) {
     }
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
-        if(['image/png','image/jpeg'].indexOf(file.type)) {
+        if(['image/png','image/jpeg','image/gif'].indexOf(file.type)>=0) {
             conUl.append('<li id="conli'+liNum+'"><div class="fname">'+file.name+'</div><div class="before">'+file.name+'</div><div class="status"></div><div class="after"></div><div class="deal"></div><div class="down"></div></li>');
             $('#conli'+liNum+' .before').html(getSizeTrans(file.size));
             uploadFile(file, liNum);

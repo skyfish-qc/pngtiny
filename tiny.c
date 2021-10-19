@@ -5,6 +5,7 @@
 #include "tiny.h"
 #include "png_compress.h"
 #include "jpg_compress.h"
+#include "gif_compress.h"
 
 void EMSCRIPTEN_KEEPALIVE tiny(unsigned char* buf,int bufsize,unsigned char* retdata) {
     unsigned char* pngSignature;
@@ -20,6 +21,16 @@ void EMSCRIPTEN_KEEPALIVE tiny(unsigned char* buf,int bufsize,unsigned char* ret
     memcpy(&jpgSignature2,buf+bufsize-2,2);
     if(jpgSignature1==0xd8ff&&jpgSignature2==0xd9ff) {
         myjpg_compress(buf,bufsize,retdata);
+        return;
+    }
+    unsigned char gifSig1;
+    unsigned char gifSig2;
+    unsigned char gifSig3;
+    memcpy(&gifSig1,buf,1);
+    memcpy(&gifSig2,buf+1,1);
+    memcpy(&gifSig3,buf+2,1);
+    if(gifSig1==0x47&&gifSig2==0x49&&gifSig3==0x46) {
+        mygif_compress(buf,bufsize,retdata);
         return;
     }
 }

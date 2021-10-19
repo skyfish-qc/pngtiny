@@ -7,6 +7,8 @@
 #include "png.h"
 #include "libimagequant.h"
 #include "jpeglib.h"
+#include "lcdfgif/gif.h"
+#include "gifsicle.h"
 
 #include <emscripten.h>
 

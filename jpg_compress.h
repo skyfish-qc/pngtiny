@@ -69,9 +69,7 @@ static void myjpg_compress(unsigned char* buf,int bufsize,unsigned char* retdata
         failSet(retdata);
         return;
     }
-    for(i=0;i<outSize;i++) {
-        buf[i]=outputBuff[i];
-    }
+    memcpy(buf,outputBuff,outSize);
     int size = (int)outSize;
     memcpy(retdata,&size,sizeof(size));
     jpeg_destroy_compress( &cinfo2 );

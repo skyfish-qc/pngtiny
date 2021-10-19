@@ -1,6 +1,5 @@
 #ifndef PNG_COMPRESS
 #define PNG_COMPRESS
-static ImageSource outpic;
 
 static png_bytepp mypng_create_row_pointers(png_infop info_ptr, png_structp png_ptr, unsigned char *base, size_t height, png_size_t rowbytes) {
     if (!rowbytes) {
@@ -122,6 +121,7 @@ static void mypng_free_image8(png8_image *image) {
     image->chunks = NULL;
 }
 static void png_compress(unsigned char* buf,int bufsize,unsigned char* retdata) {
+    ImageSource outpic;
     png24_image srcpic = {.width=0};
     png8_image output_image = {.width=0};
     int quality_percent = 80;
@@ -317,7 +317,6 @@ static void png_compress(unsigned char* buf,int bufsize,unsigned char* retdata) 
                 num_trans = i+1;
             }
         }
-
         png_set_PLTE(png_ptr_p, info_ptr_p, palette, output_image.num_palette);
 
         if (num_trans > 0) {
