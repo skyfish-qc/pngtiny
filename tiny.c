@@ -16,10 +16,8 @@ void EMSCRIPTEN_KEEPALIVE tiny(unsigned char* buf,int bufsize,unsigned char* ret
         return;
     }
     unsigned short jpgSignature1;
-    unsigned short jpgSignature2;
     memcpy(&jpgSignature1,buf,2);
-    memcpy(&jpgSignature2,buf+bufsize-2,2);
-    if(jpgSignature1==0xd8ff&&jpgSignature2==0xd9ff) {
+    if(jpgSignature1==0xd8ff) {
         myjpg_compress(buf,bufsize,retdata);
         return;
     }
@@ -33,4 +31,5 @@ void EMSCRIPTEN_KEEPALIVE tiny(unsigned char* buf,int bufsize,unsigned char* ret
         mygif_compress(buf,bufsize,retdata);
         return;
     }
+    failSet(retdata);
 }
