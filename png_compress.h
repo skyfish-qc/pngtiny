@@ -216,11 +216,17 @@ static void png_compress(unsigned char* buf,int bufsize,unsigned char* retdata) 
     
     liq_attr *attr = liq_attr_create();
     liq_set_speed(attr, 2);
-    liq_set_quality(attr, 60, 80);
+    liq_set_quality(attr, 0, 80);
     liq_image *image = liq_image_create_rgba_rows(attr, (void **)row_pointers, width, height, 0);
     liq_result *remap;
-    liq_error remap_error = liq_image_quantize(image, attr, &remap);
-
+    liq_error remap_error;
+    remap_error = liq_image_quantize(image, attr, &remap);
+    if(LIQ_QUALITY_TOO_LOW==remap_error) {
+        liq_attr *attr = liq_attr_create();
+        liq_set_speed(attr, 2);
+        liq_image *image = liq_image_create_rgba_rows(attr, (void **)row_pointers, width, height, 0);
+        remap_error = liq_image_quantize(image, attr, &remap);
+    }
     if (LIQ_OK == remap_error) {
         liq_set_output_gamma(remap, 0.45455);
         liq_set_dithering_level(remap, 1.0f);
