@@ -2,10 +2,13 @@
 ---
   - 2021.10.14 添加jpg图片压缩
   - 2021.10.19 添加GIF图片压缩
+  - 2022.01.06 添加demo地址
 ---
 ## 使用
 
 部署web文件夹到服务器访问即可(需要在支持webassembly的浏览器访问，比如Chrome，edge)
+
+可以访问 [demo](https://h5.skyfish.me/pngtiny/)
 
 ## 说明
 
