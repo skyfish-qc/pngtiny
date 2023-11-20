@@ -4,6 +4,25 @@
   - 2021.10.19 添加GIF图片压缩
   - 2022.01.06 添加demo地址
 ---
+##新加函数代码
+
+·
+
+unsigned char *
+Gif_writeMem(Gif_Stream *gfs, const Gif_CompressInfo* gcinfo, unsigned long * outsize) {
+    Gif_Writer grr;
+    int ok = gif_writer_init(&grr, NULL, gcinfo)&& write_gif(gfs, &grr);
+    unsigned char* buf=NULL;
+    if(ok) {
+        buf = malloc(grr.pos);
+        memcpy(buf,grr.v, grr.pos);
+        memcpy(outsize,&grr.pos,sizeof(unsigned long));
+    }
+    gif_writer_cleanup(&grr);
+    return buf;
+}
+·
+
 ## 使用
 
 部署web文件夹到服务器访问即可(需要在支持webassembly的浏览器访问，比如Chrome，edge)
