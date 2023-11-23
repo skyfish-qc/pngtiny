@@ -6,7 +6,7 @@
 ---
 ##新加函数代码
 
-···
+```c++
 unsigned char *
 Gif_writeMem(Gif_Stream *gfs, const Gif_CompressInfo* gcinfo, unsigned long * outsize) {
     Gif_Writer grr;
@@ -20,7 +20,7 @@ Gif_writeMem(Gif_Stream *gfs, const Gif_CompressInfo* gcinfo, unsigned long * ou
     gif_writer_cleanup(&grr);
     return buf;
 }
-···
+```
 
 ## 使用
 
